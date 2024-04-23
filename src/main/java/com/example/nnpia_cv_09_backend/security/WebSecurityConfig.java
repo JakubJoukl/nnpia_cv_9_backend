@@ -24,7 +24,7 @@ public class WebSecurityConfig {
         http
                 .authorizeHttpRequests((requests) -> requests
                         .anyRequest().permitAll()
-                );
+                ).cors();
 
         return http.build();
     }
@@ -41,11 +41,15 @@ public class WebSecurityConfig {
         return new InMemoryUserDetailsManager(user);
     }
 
+    //CORS umožňuje omezit přístup k prostředkům tak, aby je mohl provádět jen určitý specifikovaný klient (nebo jiný server)
+    //CORS politika platí pro requesty z jiných zdrojů než je aktuální server, CORS je hlídán a vynucován webovým prohlížečem
+    //CORS omezuje přístup k datům, tím zabraňuje třetím stranám jejich snahy získat naše data třeba pomocí cross-site scriptingu
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(Arrays.asList("http://localhost:5173/"));
         configuration.setAllowedMethods(Arrays.asList("*"));
+        configuration.setAllowedHeaders(Arrays.asList("*"));
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;
